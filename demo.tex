@@ -69,7 +69,7 @@ with Edge Uncertainty}
 % \subtitle{Shortest Path and Centrality Measures}
 \date{\textbf{Supervisor: Osmar R. Za\"{\i}ane}}
 \author{\textbf{Chi Zhang}}
-\institute{March 10, 2018}
+\institute{March 27, 2018}
 % \titlegraphic{\hfill\includegraphics[height=1.5cm]{logo.pdf}}
 
 
@@ -82,6 +82,34 @@ with Edge Uncertainty}
   \vspace{0.1in}
   \tableofcontents
 \end{frame}
+
+\section{Introduction}
+
+\subsection{Motivation}
+\begin{frame}
+\frametitle{Motivation: Uncertainty}
+\begin{itemize}
+\item Traditional graph centrality measures are applied to discrete, static graphs, where binary edges represent the "presence" or "absence" of a relationship
+\item In practice, however, edge uncertainty arises almost everywhere:
+\begin{itemize}
+\item When considering the evolution of networks overtime, there is inherent uncertainty about the strength of underlying relationships at a particular point in time
+\item Even in static graphs, it is sometimes uncertain whether the interaction between two nodes is existed, eg. protein-protein interaction network, crime evidence network, etc.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Motivation: Probabilistic Graph}
+\begin{figure}[H]
+\centering
+\includegraphics[scale = 0.2]{probabilistic_graph.png}
+\caption{An example of probabilistic graph}
+%\label{probabilistic_graph}
+\end{figure}
+\vspace{-0.28in}
+This leads to the question that we are looking at: \textbf{Given a probabilistic graph $G := (V,E,P,W)$, where $V$ is a set of vertices, $P$ is the probability distribution over edges $E$, $W$ is the edge attributes, usually weight, how do we compute centrality measures with the presence of edge uncertainty?}
+\end{frame}
+
 
 \section{Link Prediction}
 
@@ -664,6 +692,23 @@ After adding node $\mathcal{V}_2$ or $\mathcal{V}_4$, the $\mathcal{UR}$ will be
 
 \begin{frame}{Local Community Detection - New Measure $\mathcal{K}$}
 
+\begin{equation}
+%\mathcal{K} = \mathbb{E}(N_{community\_node}) + \mathbb{E}(N_{shell\_node})
+\mathcal{K}_i = \mathbb{E}(N_{i,in\_edge}) + \mathbb{E}(N_{i,shell\_edge})
+\end{equation}
+where $\mathbb{E}(N_{i,in\_edge})$ is the expected number of edges that connect candidate node $\mathcal{V}_i$ and other nodes in $\mathcal{D}$, which can be represented as:
+\begin{equation}
+\mathbb{E}(N_{i,in\_edge}) = \sum_{\mathcal{V}_j\in \mathcal{D}}\mathcal{P}_{i,j}
+\end{equation}
+while $\mathbb{E}(N_{i,shell\_edge})$ is the expected number of edges that connect candidate node $\mathcal{V}_i$ and other nodes in $\mathcal{S}$, which can be represented as:
+\begin{equation}
+\mathbb{E}(N_{i,shell\_edge}) = \sum_{\mathcal{V}_j\in \mathcal{S}}\mathcal{P}_{i,j}\cdot \mathcal{P}_{j,shell}
+\end{equation}
+
+\begin{equation}
+\mathcal{P}_{j,shell} = 1-\prod_{\mathcal{V}_m\in \mathcal{D}}(1-\mathcal{P}_{j,m})
+\end{equation}
+
 \end{frame}
 
 
@@ -707,9 +752,177 @@ After adding node $\mathcal{V}_2$ or $\mathcal{V}_4$, the $\mathcal{UR}$ will be
 \end{frame}
 
 
-\section{Introduction}
-\subsection{Background}
-\begin{frame}[fragile]{Background}
+\begin{frame}{Local Community Detection - Experiment - Dataset}
+
+The karate network \cite{zachary1977information} describes friendships between members of a karate club at a U.S. university in 1977. The core network consists of 34 nodes and 78 edges. The club fractured into two parts during the study and the resulting two groups are the labels used for the external evaluation. It is assumed that the community structure can be recovered using a good community detection algorithm.
+
+The football network \cite{girvan2002community} contains all the Division IA college football teams and the edges indicate games during the fall of 2000. The total number of teams is 115 and the total number of matches is 613. The labels are the conferences to which each team belongs and matches are most often played between teams from the same conference. Therefore communities detected in this network should indicate the different conferences. 
+
+\end{frame}
+
+
+
+
+\begin{frame}{Local Community Detection - Experiment - Dataset}
+
+The synthetic network model used in this paper is adopted from \cite{lancichinetti2009benchmarks}. The authors have constructed algorithms to generate synthetic networks with community structures, which has become a standard benchmark for community detection using synthetic networks. The networks are generated using six different input parameters, shown in the Table \ref{synthetic_network_parameter}, together with the values used in this paper. These parameters allow for the generation of families of networks with desired properties.
+\begin{table}[]
+\centering
+\caption{Parameters for generating synthetic networks}
+\label{synthetic_network_parameter}
+\begin{tabular}{ccc}
+\hline
+Variable & Value & Description                     \\ \hline
+$N$     & 100   & number of nodes                 \\
+$k$     & 10    & average degree                  \\
+$k_{max}$  & 30    & maximum degree                  \\
+$\mu$ & 0.2   & mixing parameter                \\
+$c_{min}$  & 15    & minimum for the community sizes \\
+$c_{max}$  & 25    & maximum for the community sizes \\ \hline
+\end{tabular}
+\end{table}
+
+\end{frame}
+
+
+
+
+
+\begin{frame}{Local Community Detection - Experiment}
+\begin{table}[]
+\centering
+\caption{Algorithm List}
+\label{Algorithm_list}
+\begin{tabular}{c||c}
+\hline
+Algorithm                                                                      & Description                                                                                                                                                                \\ \hline
+R                                                                     & \begin{tabular}[c]{@{}c@{}}original local community detection algorithm \\ based on the local modularity R\end{tabular}                                                    \\ \hline
+UR                                                                    & \begin{tabular}[c]{@{}c@{}}original local community detection algorithm \\ based on the uncertain version local \\ modularity UR as mentioned in  Equation (2)\end{tabular} \\ \hline
+UR+K                                                                  & \begin{tabular}[c]{@{}c@{}}our algorithm as mentioned in Algorithm1\end{tabular}                                            \\ \hline
+Louvain                                                                        & Louvain algorithm                                                                                                                                                          \\ \hline
+ULouvain                                                                       & \begin{tabular}[c]{@{}c@{}}regard probability as weight and run\\  weighted version of the Louvain algorithm\end{tabular}                                                           \\ \hline
+\end{tabular}
+\end{table}
+
+\end{frame}
+
+
+
+
+
+\begin{frame}{Local Community Detection - Experiment - Supervised Evaluation}
+
+\begin{figure}
+\includegraphics[scale = 0.2]{image4_change.jpeg}
+\caption{Algorithm results on karate club, football and synthetic networks. For each network, we add 10\%, 20\%, 30\% and 40\% non-existential edges to the original network. The original network is also regarded as a special case of uncertain network. For each uncertain network, we compare our algorithm (UR+K) with the other 4 algorithms. The precision, recall and F1-measure values of each algorithm are all shown in the graphs. The F1-measure values gained by different algorithms are represented by different colored bars. Each F1-measure value's precision and recall values are represented by its inner black bar and external white bar respectively. }%For example, the part wrapped in a red frame represents the results gained by algorithm R on original karate club data. The F1-measure, precision and recall values are 0.6603, 0.848 and 0.5406 respectively.}
+\end{figure}
+
+\end{frame}
+
+
+
+\begin{frame}{Local Community Detection - Experiment - Supervised Evaluation}
+
+\begin{figure}
+      \centering
+      
+      \begin{subfigure}[b]{\textwidth}
+         \includegraphics[scale = 0.11]{image4_change.jpeg}
+         \centering
+      \end{subfigure}
+
+      \begin{subfigure}[b]{\textwidth}
+         \includegraphics[scale = 0.11]{image5.jpeg}
+         \centering
+      \end{subfigure}
+
+	\begin{subfigure}[b]{\textwidth}
+         \includegraphics[scale = 0.11]{image6.jpeg}
+         \centering
+      \end{subfigure}
+
+      % \caption{Algorithm results on karate club, football and synthetic networks. For each network, we add 10\%, 20\%, 30\% and 40\% non-existential edges to the original network. The original network is also regarded as a special case of uncertain network. For each uncertain network, we compare our algorithm (UR+K) with the other 4 algorithms. The precision, recall and F1-measure values of each algorithm are all shown in the graphs. The F1-measure values gained by different algorithms are represented by different colored bars. Each F1-measure value's precision and recall values are represented by its inner black bar and external white bar respectively. }%For example, the part wrapped in a red frame represents the results gained by algorithm R on original karate club data. The F1-measure, precision and recall values are 0.6603, 0.848 and 0.5406 respectively.}
+    \label{cl_enron}
+    \end{figure}
+\end{frame}
+
+
+
+\begin{frame}{Local Community Detection - Experiment - Unsupervised Evaluation}
+
+\tiny
+
+\begin{table}[h]
+\centering
+\caption{$\mathcal{UR}$ on Karate Club Data}
+\label{unsupervised_karate}
+\begin{tabular}{c|c|c|c|c|c}
+\hline
+Noise & R      & UR     & UR+K            & Louvain & ULouvain \\ \hline
+No    & 0.5787 & 0.5789 & \textbf{0.654}  & 0.5604  & 0.5604   \\ \hline
+10\%  & 0.584  & 0.5902 & \textbf{0.7026} & 0.5176  & 0.5258   \\ \hline
+20\%  & 0.6235 & 0.5942 & \textbf{0.7462} & 0.4737  & 0.4858   \\ \hline
+30\%  & 0.7065 & 0.6232 & \textbf{0.7858} & 0.4326  & 0.4583   \\ \hline
+40\%  & 0.7628 & 0.6641 & \textbf{0.8601} & 0.3965  & 0.4281   \\ \hline
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{$\mathcal{UR}$ on Football Data}
+\label{unsupervised_football}
+\begin{tabular}{c|c|c|c|c|c}
+\hline
+Noise & R      & UR     & UR+K   & Louvain         & ULouvain        \\ \hline
+No    & 0.5065 & 0.5057 & 0.5327 & \textbf{0.5497} & \textbf{0.5497} \\ \hline
+10\%  & 0.4714 & 0.4826 & 0.4902 & 0.5152          & \textbf{0.5208} \\ \hline
+20\%  & 0.4378 & 0.4491 & 0.454  & 0.4783          & \textbf{0.4802} \\ \hline
+30\%  & 0.415  & 0.4189 & 0.4221 & 0.4384          & \textbf{0.4463} \\ \hline
+40\%  & 0.4121 & 0.4008 & 0.4017 & 0.4134          & \textbf{0.4164} \\ \hline
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{$\mathcal{UR}$ on Synthetic Data}
+\label{unsupervised_synthetic}
+\begin{tabular}{c|c|c|c|c|c}
+\hline
+Noise & R      & UR     & UR+K            & Louvain         & ULouvain        \\ \hline
+No    & 0.6018 & 0.6019 & \textbf{0.6537} & \textbf{0.6537} & \textbf{0.6537} \\ \hline
+10\%  & 0.5476 & 0.5361 & \textbf{0.5928} & 0.5924          & 0.5924          \\ \hline
+20\%  & 0.5016 & 0.4941 & \textbf{0.5484} & 0.5415          & 0.5414          \\ \hline
+30\%  & 0.4964 & 0.4685 & \textbf{0.5306} & 0.5003          & 0.5             \\ \hline
+40\%  & 0.5232 & 0.4735 & \textbf{0.5742} & 0.4635          & 0.4642          \\ \hline
+\end{tabular}
+\end{table}
+
+\end{frame}
+
+
+\begin{frame}{Local Community Detection - Experiment - Hyper-Parameter Evaluation}
+
+\begin{figure}[h]
+\begin{subfigure}[b]{\textwidth}
+\includegraphics[scale = 0.13]{para1.jpeg}
+\includegraphics[scale = 0.13]{para2.jpeg}
+\centering
+\end{subfigure}
+\begin{subfigure}[b]{\textwidth}
+\includegraphics[scale = 0.13]{para3.jpeg}
+\centering
+\end{subfigure}
+\caption{Hyper-parameter Validation. For each network, we add 10\%, 20\%, 30\% and 40\% non-existential edges to the original network. The original network is also regarded as a special case of uncertain network.}
+\label{hyper}
+\end{figure}
+
+\end{frame}
+
+
+
+\section{Centrality and Rank}
+
+\begin{frame}{Centrality and Rank - Background}
 
 %  The \themename theme is a Beamer theme with minimal visual noise
 %  inspired by the \href{https://github.com/hsrmbeamertheme/hsrmbeamertheme}{\textsc{hsrm} Beamer
@@ -735,7 +948,7 @@ In graph theory, \textbf{centrality} identifies the importance of vertices withi
 \end{frame}
 
 \begin{frame}
-\frametitle{Background: Centrality}
+\frametitle{Centrality and Rank - Background}
 
 \textbf{Betweenness Centrality}: Measures how many times a node n occurs in a shortest path between any other 2 nodes in the graph;
 
@@ -783,34 +996,8 @@ In graph theory, \textbf{centrality} identifies the importance of vertices withi
 
 %\end{frame}
 
-\subsection{Motivation}
-\begin{frame}
-\frametitle{Motivation: Uncertainty}
-\begin{itemize}
-\item Traditional graph centrality measures are applied to discrete, static graphs, where binary edges represent the "presence" or "absence" of a relationship
-\item In practice, however, edge uncertainty arises almost everywhere:
-\begin{itemize}
-\item When considering the evolution of networks overtime, there is inherent uncertainty about the strength of underlying relationships at a particular point in time
-\item Even in static graphs, it is sometimes uncertain whether the interaction between two nodes is existed, eg. protein-protein interaction network, crime evidence network, etc.
-\end{itemize}
-\end{itemize}
-\end{frame}
 
-\begin{frame}
-\frametitle{Motivation: Probabilistic Graph}
-\begin{figure}[H]
-\centering
-\includegraphics[scale = 0.2]{probabilistic_graph.png}
-\caption{An example of probabilistic graph}
-%\label{probabilistic_graph}
-\end{figure}
-\vspace{-0.28in}
-This leads to the question that we are looking at: \textbf{Given a probabilistic graph $G := (V,E,P,W)$, where $V$ is a set of vertices, $P$ is the probability distribution over edges $E$, $W$ is the edge attributes, usually weight, how do we compute centrality measures with the presence of edge uncertainty?}
-\end{frame}
-
-\section{Related Work}
-\subsection{Negative Logarithm \cite{potamias2009nearest}}
-\begin{frame}{Negative Logarithm \cite{potamias2009nearest}}
+\begin{frame}{Centrality and Rank - Related Work - Negative Logarithm \cite{potamias2009nearest}}
 % 	\themename supports 4 different titleformats:
 % 	\begin{itemize}
 % 		\item Regular
@@ -844,8 +1031,8 @@ W(e_{uv}) = -log(P(e_{uv}))
 % 	\end{alertblock}
 % \end{frame}
 % }
-\subsection{Most Probable Path \cite{pfeiffer2010probabilistic}, \cite{pfeiffer2011methods}}
-\begin{frame}{Most Probable Path \cite{pfeiffer2010probabilistic}, \cite{pfeiffer2011methods}}
+
+\begin{frame}{Centrality and Rank - Related Work - Most Probable Path \cite{pfeiffer2010probabilistic}, \cite{pfeiffer2011methods}}
 \begin{itemize}
 \item Using the notion of probabilistic paths, we calculate the probability of the existence of a path $\rho_{ij}$ between nodes $i$ and $j$ as follows:
 \begin{equation*}
