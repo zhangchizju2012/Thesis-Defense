@@ -85,7 +85,6 @@ with Edge Uncertainty}
 
 \section{Introduction}
 
-\subsection{Motivation}
 \begin{frame}
 \frametitle{Motivation: Uncertainty}
 \begin{itemize}
@@ -107,19 +106,22 @@ with Edge Uncertainty}
 %\label{probabilistic_graph}
 \end{figure}
 \vspace{-0.28in}
-This leads to the question that we are looking at: \textbf{Given a probabilistic graph $G := (V,E,P,W)$, where $V$ is a set of vertices, $P$ is the probability distribution over edges $E$, $W$ is the edge attributes, usually weight, how do we compute centrality measures with the presence of edge uncertainty?}
+An uncertain graph $\mathcal{G = (V,E,P)}$ is defined over a set of nodes $\mathcal{V}$, a set of edges $\mathcal{E}$, and a set of probabilities $\mathcal{P}$ of edge existence. Note the probability over the edge between node $\mathcal{V}_i$ and node $\mathcal{V}_j$ can be represented as $\mathcal{P}_{i,j}$ or $\mathcal{P}_{j,i}$. The multiple links and self-connections are not allowed.
 \end{frame}
 
 
 \section{Link Prediction}
 
-\begin{frame}{Link Prediction - Problem Definition}
-\begin{figure}
-\centering
-\includegraphics[scale = 0.4]{evaluation.png}
-\caption{Evaluation procedures: Hidden true links are compared to predicted links. How many predicted links where truly there?}
-\label{example}
-\end{figure}
+\begin{frame}
+\frametitle{Link Prediction - Problem Definition}
+
+\textbf{Link Prediction} is the problem of determining future or missing associations between entities in complex networks based on observed links.
+\begin{itemize}
+\item Forecast the future links.
+\item Determine the hidden or unobserved relationships between nodes.
+\end{itemize}
+
+For each pair of nodes, $\mathcal{V}_x,\mathcal{V}_y\in \mathcal{V}$, which are not directly connected, we assign a score, $s_{xy}$, according to a given similarity measure. A higher score means nodes $\mathcal{V}_x$ and $\mathcal{V}_y$ are more likely to have an edge. 
 \end{frame}
 
 
@@ -127,7 +129,7 @@ This leads to the question that we are looking at: \textbf{Given a probabilistic
 \frametitle{Link Prediction - Previous Work - Similarity Metrics}
 \textbf{Basic Ideas:} Two nodes, $\mathcal{V}_x$ and $\mathcal{V}_y$, are more likely to form a link if they have many common neighbors. 
 \begin{itemize}
-\item \textbf{Common Neighbors (CN)}: The simplest measure of the neighborhood overlap is the directed count:
+\item \textbf{Common Neighbors (CN)}: Count the number of common neighbors two unconnected nodes have:
 \begin{equation}
 s_{xy}=|\Gamma(x)\cap\Gamma(y)|
 \end{equation}
@@ -143,6 +145,9 @@ where $k(z)$ is the degree of node $\mathcal{V}_z$, namely $k(z) = |\Gamma(z)|$
 
 \begin{frame}
 \frametitle{Link Prediction - Previous Work - Similarity Metrics for Weighted Graphs}
+
+In the real world, links are naturally weighted:
+
 CN: $s_{xy}=|\Gamma(x)\cap\Gamma(y)|$
 
 \textbf{Weighted Common Neighbors (WCN)}
@@ -196,28 +201,51 @@ Here, $w(x, y) = w(y, x)$ denotes the weight of the link between nodes $\mathcal
 \end{frame}
 
 \begin{frame}{Link Prediction - Review of Previous Method}
-\begin{figure}
-\includegraphics[scale = 0.2]{common_neighbor_2.png}
-\hspace{1cm}
-\includegraphics[scale = 0.2]{common_neighbor_1.png}
-\centering
-% \caption{An example showing the problem when considering the probability as a weight. A-B would seem to have a higher probability to exist than D-E}
-% \label{example}
-\end{figure}
+ \begin{columns}[T,onlytextwidth]
+    \column{0.3\textwidth}
+      \begin{figure}
+      \centering
+      
+      \begin{subfigure}[b]{\textwidth}
+         \includegraphics[scale = 0.2]{common_neighbor_2.png}
+      \end{subfigure}
 
-\begin{figure}
-\includegraphics[scale = 0.18]{possible_world.png}
-\centering
-\caption{Possible worlds for two uncertain links between three nodes}
-\label{example}
-\end{figure}
+      \begin{subfigure}[b]{\textwidth}
+         \includegraphics[scale = 0.2]{common_neighbor_1.png}
+      \end{subfigure}
 
-Given an uncertain network $\mathcal{G = (V,E,P)}$, we can sample each edge in $\mathcal{G}$ according to the probability $\mathcal{P}(e)$ to generate the possible graph $G = (V_G,E_G)$. We have $E_G \in \mathcal{E}$ and $V_G \in \mathcal{V}$.
-\begin{equation}
-Pr(G) = \prod_{e\in E_G}\mathcal{P}(e)\prod_{e\in \mathcal{E}, e\notin E_G}(1-\mathcal{P}(e))
-\end{equation}
+%       \caption{An example showing the problem when considering the probability as a weight. A-B would seem to have a higher probability to exist than D-E}
+      \label{example}
+      \end{figure}
+
+    \column{0.7\textwidth}
+    
+    \begin{figure}
+    \includegraphics[scale = 0.18]{possible_world.png}
+    \centering
+    \caption{Possible worlds for two uncertain links between three nodes: both links may exist, both may be absent, or either one is present.}
+    \label{example}
+    \end{figure}
+    
+  \end{columns}
+  
+\begin{align*}
+\text{CN: }s_{xy}=|\Gamma(x)\cap\Gamma(y)|
+\end{align*}
+\small
+$s_{AB}=1 \Rightarrow P=0.2\times 0.9=0.18$ 
+
+$s_{AB}=0 \Rightarrow P=0.2\times(1-0.9)+(1-0.2)\times0.9+(1-0.2)\times(1-0.9)=0.82$
+
+$s_{DE}=1 \Rightarrow P=0.5\times 0.5=0.25$ 
+
+$s_{DE}=0 \Rightarrow P=0.5\times(1-0.5)+(1-0.5)\times0.5+(1-0.5)\times(1-0.5)=0.75$
+
+The probability of $s_{DE}=1$ is larger than the probability of $s_{AB}=1$. 
 
 \end{frame}
+
+
 
 \begin{frame}{Link Prediction - Review of Previous Method}
 \begin{figure}
@@ -228,26 +256,66 @@ Pr(G) = \prod_{e\in E_G}\mathcal{P}(e)\prod_{e\in \mathcal{E}, e\notin E_G}(1-\m
 % \caption{An example showing the problem when considering the probability as a weight. A-B would seem to have a higher probability to exist than D-E}
 % \label{example}
 \end{figure}
-\begin{align*}
+Given an uncertain network $\mathcal{G = (V,E,P)}$, we can sample each edge in $\mathcal{G}$ according to the probability $\mathcal{P}(e)$ to generate the possible graph $G = (V_G,E_G)$. We have $E_G \in \mathcal{E}$ and $V_G \in \mathcal{V}$.
+\begin{equation}
 Pr(G) = \prod_{e\in E_G}\mathcal{P}(e)\prod_{e\in \mathcal{E}, e\notin E_G}(1-\mathcal{P}(e))
-\end{align*}
-\begin{align*}
-\text{CN: }s_{xy}=|\Gamma(x)\cap\Gamma(y)|
-\end{align*}
-
-$s_{AB}=1 \Rightarrow P=0.2\times 0.9=0.18$ 
-
-$s_{AB}=0 \Rightarrow P=0.2\times(1-0.9)+(1-0.2)\times0.9+(1-0.2)\times(1-0.9)=0.82$
-
-$s_{DE}=1 \Rightarrow P=0.5\times 0.5=0.25$ 
-
-$s_{DE}=0 \Rightarrow P=0.5\times(1-0.5)+(1-0.5)\times0.5+(1-0.5)\times(1-0.5)=0.75$
-
-The probability of $s_{DE}=1$ is larger than the probability of $s_{AB}=1$. 
+\end{equation}
 \end{frame}
+
+% \begin{frame}{Link Prediction - Review of Previous Method}
+% \begin{figure}
+% \includegraphics[scale = 0.2]{common_neighbor_2.png}
+% \hspace{1cm}
+% \includegraphics[scale = 0.2]{common_neighbor_1.png}
+% \centering
+% % \caption{An example showing the problem when considering the probability as a weight. A-B would seem to have a higher probability to exist than D-E}
+% % \label{example}
+% \end{figure}
+
+% \begin{figure}
+% \includegraphics[scale = 0.18]{possible_world.png}
+% \centering
+% \caption{Possible worlds for two uncertain links between three nodes}
+% \label{example}
+% \end{figure}
+
+% Given an uncertain network $\mathcal{G = (V,E,P)}$, we can sample each edge in $\mathcal{G}$ according to the probability $\mathcal{P}(e)$ to generate the possible graph $G = (V_G,E_G)$. We have $E_G \in \mathcal{E}$ and $V_G \in \mathcal{V}$.
+% \begin{equation}
+% Pr(G) = \prod_{e\in E_G}\mathcal{P}(e)\prod_{e\in \mathcal{E}, e\notin E_G}(1-\mathcal{P}(e))
+% \end{equation}
+
+% \end{frame}
+
+% \begin{frame}{Link Prediction - Review of Previous Method}
+% \begin{figure}
+% \includegraphics[scale = 0.23]{common_neighbor_2.png}
+% \hspace{1cm}
+% \includegraphics[scale = 0.23]{common_neighbor_1.png}
+% \centering
+% % \caption{An example showing the problem when considering the probability as a weight. A-B would seem to have a higher probability to exist than D-E}
+% % \label{example}
+% \end{figure}
+% \begin{align*}
+% Pr(G) = \prod_{e\in E_G}\mathcal{P}(e)\prod_{e\in \mathcal{E}, e\notin E_G}(1-\mathcal{P}(e))
+% \end{align*}
+% \begin{align*}
+% \text{CN: }s_{xy}=|\Gamma(x)\cap\Gamma(y)|
+% \end{align*}
+
+% $s_{AB}=1 \Rightarrow P=0.2\times 0.9=0.18$ 
+
+% $s_{AB}=0 \Rightarrow P=0.2\times(1-0.9)+(1-0.2)\times0.9+(1-0.2)\times(1-0.9)=0.82$
+
+% $s_{DE}=1 \Rightarrow P=0.5\times 0.5=0.25$ 
+
+% $s_{DE}=0 \Rightarrow P=0.5\times(1-0.5)+(1-0.5)\times0.5+(1-0.5)\times(1-0.5)=0.75$
+
+% The probability of $s_{DE}=1$ is larger than the probability of $s_{AB}=1$. 
+% \end{frame}
 
 
 \begin{frame}{Link Prediction - Neighbor-based Metrics for Uncertain Graphs}
+CN: $s_{xy}=|\Gamma(x)\cap\Gamma(y)|$
 
 \textbf{Uncertain Common Neighbors (UCN)}
 \begin{equation}
@@ -256,6 +324,7 @@ s_{xy}=\sum_{G\in \mathcal{G}}( Pr(G)\times|\Gamma_G(x)\cap\Gamma_G(y)|)
 % \begin{equation}
 % s_{xy}=\sum_{z\in \Gamma(x)\cap\Gamma(y)}p(x,z)\times p(y,z)
 % \end{equation}
+RA: $s_{xy}=\sum_{z\in \Gamma(x)\cap\Gamma(y)}\frac{1}{k(z)}$
 
 \textbf{Uncertain Resource Allocation (URA)}
 \begin{equation}
@@ -265,14 +334,20 @@ s_{xy}=\sum_{G\in \mathcal{G}}( Pr(G)\times\sum_{z\in \Gamma_G(x)\cap\Gamma_G(y)
 \end{frame}
 
 \begin{frame}{Link Prediction - UCN Complexity Analysis}
+\begin{itemize}
+\item Whether a node $\mathcal{V}_z$ is a common neighbor of nodes $\mathcal{V}_x$ and $\mathcal{V}_y$ in a possible world is independent of other nodes because it is determined by the existence of edges $\mathcal{E}_{xz}$ and $\mathcal{E}_{yz}$ in the possible world. Therefore, each node in $\Gamma(x)\cap\Gamma(y)$ can be considered independently. 
+\item If the existence probability over uncertain edges $\mathcal{E}_{xz}$ and $\mathcal{E}_{yz}$ are $\mathcal{P}_{x,z}$ and $\mathcal{P}_{y,z}$ respectively, only in $\mathcal{P}_{x,z}\times\mathcal{P}_{y,z}$ of all possible worlds, node $\mathcal{V}_z$ is the common neighbor of nodes $\mathcal{V}_x$ and $\mathcal{V}_y$.
+\end{itemize}
+
+
 \begin{align*}
 s_{xy}&=\sum_{G\in \mathcal{G}}( Pr(G)\times|\Gamma_G(x)\cap\Gamma_G(y)|) \textcolor{red}{\text{$\Rightarrow O(2^{|\mathcal{E}|}k)$}}\\
-&=\sum_{G\in \mathcal{G}}Pr(G)\sum_{z\in \Gamma(x)\cap\Gamma(y)}\mathbb{I}_{\Gamma_G(x)\cap\Gamma_G(y)}(z)\\
-&=\sum_{z\in \Gamma(x)\cap\Gamma(y)}\sum_{G\in \mathcal{G}}Pr(G)\times\mathbb{I}_{\Gamma_G(x)\cap\Gamma_G(y)}(z)\\
+% &=\sum_{G\in \mathcal{G}}Pr(G)\sum_{z\in \Gamma(x)\cap\Gamma(y)}\mathbb{I}_{\Gamma_G(x)\cap\Gamma_G(y)}(z)\\
+% &=\sum_{z\in \Gamma(x)\cap\Gamma(y)}\sum_{G\in \mathcal{G}}Pr(G)\times\mathbb{I}_{\Gamma_G(x)\cap\Gamma_G(y)}(z)\\
 &=\sum_{z\in \Gamma(x)\cap\Gamma(y)}\mathcal{P}_{x,z}\times\mathcal{P}_{y,z} \textcolor{red}{\text{$\Rightarrow O(K)$}}
 \end{align*}
 
-When $z\in \Gamma_G(x)\cap\Gamma_G(y)$, $\mathbb{I}_{\Gamma_G(x)\cap\Gamma_G(y)}(z)=1$. In other cases, $\mathbb{I}_{\Gamma_G(x)\cap\Gamma_G(y)}(z)=0$.
+% When $z\in \Gamma_G(x)\cap\Gamma_G(y)$, $\mathbb{I}_{\Gamma_G(x)\cap\Gamma_G(y)}(z)=1$. In other cases, $\mathbb{I}_{\Gamma_G(x)\cap\Gamma_G(y)}(z)=0$.
 
 $k$ is nodes' average degree in the possible world.
 
@@ -280,40 +355,51 @@ $K$ is the nodes' average degree in the uncertain network.
 \end{frame}
 
 
-\begin{frame}{Link Prediction - URA Complexity Analysis}
-\begin{align*}
-s_{xy}&=\sum_{G\in \mathcal{G}}( Pr(G)\times\sum_{z\in \Gamma_G(x)\cap\Gamma_G(y)}\frac{1}{k_G(z)}) \textcolor{red}{\text{$\Rightarrow O(2^{|\mathcal{E}|}k)$}}\\
-&=\sum_{z\in \Gamma(x)\cap\Gamma(y)}\sum_{G\in \mathcal{G}}Pr(G)\times\mathbb{I}_{\Gamma_G(x)\cap\Gamma_G(y)}(z)\times \frac{1}{k_G(z)}\\
-&=\sum_{z\in \Gamma(x)\cap\Gamma(y)}\sum_{{G_z}\in \mathcal{G}_z}Pr({G_z})\times\mathbb{I}_{\Gamma_{G_z}(x)\cap\Gamma_{G_z}(y)}(z)\times \frac{1}{k_{G_z}(z)}\textcolor{red}{\text{$\Rightarrow O(2^{K}t)$}}\\
-\end{align*}
-$\mathcal{G}_z$ here stands for the uncertain sub-graph formed by edges connecting to node $\mathcal{V}_z$, and $G_z$ is the possible world based on the uncertain sub-graph $\mathcal{G}_z$.
+% \begin{frame}{Link Prediction - URA Complexity Analysis}
+% \begin{align*}
+% s_{xy}&=\sum_{G\in \mathcal{G}}( Pr(G)\times\sum_{z\in \Gamma_G(x)\cap\Gamma_G(y)}\frac{1}{k_G(z)}) \textcolor{red}{\text{$\Rightarrow O(2^{|\mathcal{E}|}k)$}}\\
+% &=\sum_{z\in \Gamma(x)\cap\Gamma(y)}\sum_{G\in \mathcal{G}}Pr(G)\times\mathbb{I}_{\Gamma_G(x)\cap\Gamma_G(y)}(z)\times \frac{1}{k_G(z)}\\
+% &=\sum_{z\in \Gamma(x)\cap\Gamma(y)}\sum_{{G_z}\in \mathcal{G}_z}Pr({G_z})\times\mathbb{I}_{\Gamma_{G_z}(x)\cap\Gamma_{G_z}(y)}(z)\times \frac{1}{k_{G_z}(z)}\textcolor{red}{\text{$\Rightarrow O(2^{K}t)$}}\\
+% \end{align*}
+% $\mathcal{G}_z$ here stands for the uncertain sub-graph formed by edges connecting to node $\mathcal{V}_z$, and $G_z$ is the possible world based on the uncertain sub-graph $\mathcal{G}_z$.
 
-When $z\in \Gamma_G(x)\cap\Gamma_G(y)$, $\mathbb{I}_{\Gamma_G(x)\cap\Gamma_G(y)}(z)=1$. In other cases, $\mathbb{I}_{\Gamma_G(x)\cap\Gamma_G(y)}(z)=0$.
+% When $z\in \Gamma_G(x)\cap\Gamma_G(y)$, $\mathbb{I}_{\Gamma_G(x)\cap\Gamma_G(y)}(z)=1$. In other cases, $\mathbb{I}_{\Gamma_G(x)\cap\Gamma_G(y)}(z)=0$.
 
-$k$ is nodes' average degree in the possible world.
+% $k$ is nodes' average degree in the possible world.
 
-$K$ is the nodes' average degree in the uncertain network.
+% $K$ is the nodes' average degree in the uncertain network.
 
-$t=|\Gamma_G(x)\cap\Gamma_G(y)|$
-\end{frame}
+% $t=|\Gamma_G(x)\cap\Gamma_G(y)|$
+% \end{frame}
+
+% \begin{frame}{Link Prediction - An Efficient Algorithm for the Calculation of URA}
+
+% Only when both edges $\mathcal{E}_{xz}$ and $\mathcal{E}_{yz}$ exist, node $\mathcal{V}_z$ is the common neighbor of $\mathcal{V}_x$ and $\mathcal{V}_y$ in the possible world $G$. Assume node $\mathcal{V}_z$ has $m$ extra edges in an uncertain graph except edges $\mathcal{E}_{xz}$ and $\mathcal{E}_{yz}$. We have two ways to calculate $s_{xy}$:
+
+% (1) Iterate through all possible worlds, calculate each possible world's possibility and its corresponding count of edges.
+
+% (2) Iterate through all the possible number of edges and calculate their corresponding probability.
+
+% \begin{align*}
+% s_{xy}&=\sum_{z\in \Gamma(x)\cap\Gamma(y)}\sum_{{G_z}\in \mathcal{G}_z}Pr({G_z})\times\mathbb{I}_{\Gamma_{G_z}(x)\cap\Gamma_{G_z}(y)}(z)\times \frac{1}{k_{G_z}(z)}\\
+% &=\sum_{z\in \Gamma(x)\cap\Gamma(y)}\mathcal{P}_{x,z}\times\mathcal{P}_{y,z} \times \sum_{n=0}^{m}(P_{1\rightarrow m}^n \times \frac{1}{n+2})
+% \end{align*}
+
+% We can index the $m$ edges connecting to $\mathcal{V}_z$ from 1 to $m$. $P_{1\rightarrow m}^n$ here stands for from edges $e_1$ to $e_m$, the probability that exactly $n$ among them exist in possible worlds.
+
+% \end{frame}
+
 
 \begin{frame}{Link Prediction - An Efficient Algorithm for the Calculation of URA}
 
-Only when both edges $\mathcal{E}_{xz}$ and $\mathcal{E}_{yz}$ exist, node $\mathcal{V}_z$ is the common neighbor of $\mathcal{V}_x$ and $\mathcal{V}_y$ in the possible world $G$. Assume node $\mathcal{V}_z$ has $m$ extra edges in an uncertain graph except edges $\mathcal{E}_{xz}$ and $\mathcal{E}_{yz}$. We have two ways to calculate $s_{xy}$:
-
-(1) Iterate through all possible worlds, calculate each possible world's possibility and its corresponding count of edges.
-
-(2) Iterate through all the possible number of edges and calculate their corresponding probability.
-
 \begin{align*}
-s_{xy}&=\sum_{z\in \Gamma(x)\cap\Gamma(y)}\sum_{{G_z}\in \mathcal{G}_z}Pr({G_z})\times\mathbb{I}_{\Gamma_{G_z}(x)\cap\Gamma_{G_z}(y)}(z)\times \frac{1}{k_{G_z}(z)}\\
+ss_{xy}&=\sum_{G\in \mathcal{G}}( Pr(G)\times\sum_{z\in \Gamma_G(x)\cap\Gamma_G(y)}\frac{1}{k_G(z)}) \textcolor{red}{\text{$\Rightarrow O(2^{|\mathcal{E}|}k)$}}\\
 &=\sum_{z\in \Gamma(x)\cap\Gamma(y)}\mathcal{P}_{x,z}\times\mathcal{P}_{y,z} \times \sum_{n=0}^{m}(P_{1\rightarrow m}^n \times \frac{1}{n+2})
 \end{align*}
 
 We can index the $m$ edges connecting to $\mathcal{V}_z$ from 1 to $m$. $P_{1\rightarrow m}^n$ here stands for from edges $e_1$ to $e_m$, the probability that exactly $n$ among them exist in possible worlds.
 
 \end{frame}
-
 
 \begin{frame}{Link Prediction - An Efficient Algorithm for the Calculation of URA}
 
@@ -334,6 +420,55 @@ P_{1\rightarrow m}^n=\sum_{i=max(0,n-\lceil m/2 \rceil)}^{min(n,\lfloor m/2 \rfl
 \end{equation}
 
 \end{frame}
+
+
+\begin{frame}{Link Prediction - An Efficient Algorithm for the Calculation of URA}
+
+
+\begin{figure}
+Divide the probability list into $n$ sublists, each containing 1 element, and compute the probability of having and not having this item respectively.
+
+\includegraphics[scale = 0.35]{5_sample_divide.png}
+\centering
+\caption{Algorithm Example: Divide Phase}
+\label{example}
+\end{figure}
+
+
+\end{frame}
+
+\begin{frame}{Link Prediction - An Efficient Algorithm for the Calculation of URA}
+
+We need to compute $P_{1\rightarrow m}^0, P_{1\rightarrow m}^1, ..., P_{1\rightarrow m}^m$: repeatedly merge sublists to compute probabilities for sublists with more than 1 element.
+
+\begin{columns}[T,onlytextwidth]
+    \column{0.7\textwidth}
+      \begin{figure}
+      \includegraphics[scale = 0.33]{5_sample_conquer.png}
+      \centering
+      \caption{Algorithm Example: Merge Phase}
+      \label{example}
+      \end{figure}
+
+    \column{0.3\textwidth}
+    $P_{1\rightarrow 5}^0 = 0.00378$
+    $P_{1\rightarrow 5}^1 = 0.0558$
+    $P_{1\rightarrow 5}^2 = 0.237$
+    $P_{1\rightarrow 5}^3 = 0.3964$
+    $P_{1\rightarrow 5}^4 = 0.2541$
+    $P_{1\rightarrow 5}^5 = 0.05292$
+    \newline
+    \newline
+    \newline
+    \newline
+    \newline
+    \small
+    $P_{1\rightarrow m}^n$ here stands for from edges $e_1$ to $e_m$, the probability that exactly $n$ among them exist in possible worlds.
+  \end{columns}
+
+
+\end{frame}
+
 
 \begin{frame}{Link Prediction - An Efficient Algorithm for the Calculation of URA}
 
@@ -372,106 +507,101 @@ return $kEdge(0, uncertainEdgeListLength-1)$\;
 
 \end{frame}
 
+% \begin{frame}{Link Prediction - An Efficient Algorithm for the Calculation of URA}
+% \begin{equation}
+% P_{1\rightarrow m}^n=\sum_{i=max(0,n+k-m)}^{min(n,k)}P_{1\rightarrow k}^i P_{k+1\rightarrow m}^{n-i}
+% \label{URA-equation}
+% \end{equation}
 
-\begin{frame}{Link Prediction - An Efficient Algorithm for the Calculation of URA}
+% $A = [P_{1\rightarrow m+2}^0, P_{1\rightarrow m+2}^1, ..., P_{1\rightarrow m+2}^{m+2}]$
+
+% $B = [P_{1\rightarrow m}^0, P_{1\rightarrow m}^1, ..., P_{1\rightarrow m}^{m}]$
+
+% $C = [P_{m+1\rightarrow m+2}^0, P_{m+1\rightarrow m+2}^1, P_{m+1\rightarrow m+2}^2]$
+
+% \begin{align*}
+% \left\{
+% \begin{aligned}
+% P_{m+1\rightarrow m+2}^2 P_{1\rightarrow m}^{m} = P_{1\rightarrow m+2}^{m+2}\\
+% P_{m+1\rightarrow m+2}^1 P_{1\rightarrow m}^{m} + P_{m+1\rightarrow m+2}^2 P_{1\rightarrow m}^{m-1} = P_{1\rightarrow m+2}^{m+1}\\
+% P_{m+1\rightarrow m+2}^0 P_{1\rightarrow m}^{m} + P_{m+1\rightarrow m+2}^1 P_{1\rightarrow m}^{m-1} + P_{m+1\rightarrow m+2}^2 P_{1\rightarrow m}^{m-2} = P_{1\rightarrow m+2}^{m}\\
+% P_{m+1\rightarrow m+2}^0 P_{1\rightarrow m}^{m-1} + P_{m+1\rightarrow m+2}^1 P_{1\rightarrow m}^{m-2} + P_{m+1\rightarrow m+2}^2 P_{1\rightarrow m}^{m-3} = P_{1\rightarrow m+2}^{m-1}\\
+% ...\\
+% P_{m+1\rightarrow m+2}^0 P_{1\rightarrow m}^{3} + P_{m+1\rightarrow m+2}^1 P_{1\rightarrow m}^{2} + P_{m+1\rightarrow m+2}^2 P_{1\rightarrow m}^{1} = P_{1\rightarrow m+2}^3\\
+% P_{m+1\rightarrow m+2}^0 P_{1\rightarrow m}^{2} + P_{m+1\rightarrow m+2}^1 P_{1\rightarrow m}^{1} + P_{m+1\rightarrow m+2}^2 P_{1\rightarrow m}^{0} = P_{1\rightarrow m+2}^2\\
+% \end{aligned}
+% \right.
+% \end{align*}
+% \end{frame}
+
+% \begin{frame}{Link Prediction - An Efficient Algorithm for the Calculation of URA}
+
+% \begin{algorithm}[H]
+% \KwData{An uncertain graph $\mathcal{G}$.}
+% \KwResult{Probability lists for all nodes in $\mathcal{G}$ saved in a hash table $dict$}
+% Hash table $dict \leftarrow \{\}$\;
+% \For{each node $\mathcal{V}_z \in \mathcal{G}$}{
+% Array $uncertainEdgeList \leftarrow$ all uncertain edges connecting to node $\mathcal{V}_z$\;
+% $dict[\mathcal{V}_z]\leftarrow kEdgeProbability(uncertainEdgeList)$\;
+% }
+% return $dict$\;
+% \caption{Initialization}
+% \end{algorithm}
+
+% \end{frame}
 
 
-\begin{figure}
-\includegraphics[scale = 0.35]{5_sample_divide.png}
-\centering
-\caption{Algorithm Example: Divide Phase}
-\label{example}
-\end{figure}
+% \begin{frame}{Link Prediction - An Efficient Algorithm for the Calculation of URA}
 
+% \begin{algorithm}[H]
+%   \scriptsize
+% \KwData{Nodes $\mathcal{V}_x$, $\mathcal{V}_y$, an uncertain graph $\mathcal{G}$ and the hash table $dict$ after running Algorithm 2}
+% \KwResult{Resource Allocation value for nodes $\mathcal{V}_x$ and $\mathcal{V}_y$ in $\mathcal{G}$}
+% $result \leftarrow 0$\;
+% \For{each node $\mathcal{V}_z \in \Gamma(x)\cap\Gamma(y)$}{
+% Array $uncertainEdgeList \leftarrow [ ]$\;
+% $probValue \leftarrow 1$\;
+% 	\For{each node $\mathcal{V}_m$ connecting to node $\mathcal{V}_z$}{
+%     	\If{$\mathcal{V}_m=\mathcal{V}_x$ or $\mathcal{V}_m=\mathcal{V}_y$}{
+%         	$probValue \leftarrow probValue \times \mathcal{P}_{m,z}$\;
+%         	add $\mathcal{P}_{m,z}$ to $uncertainEdgeList$\;
+%         }
+%     }
+%     Array $probListC \leftarrow kEdgeProbability(uncertainEdgeList)$\;
+%     Array $probListA \leftarrow dict[\mathcal{V}_z]$\;
+%     Array $probListB \leftarrow $ use $probListA$ and $probListC$ to calculate $probListB$ based on the Equation (\ref{URA-equation})\;
+%     $oneNodeResult \leftarrow 0$\;
+%     \For{each $i \in [0,len(probListB))$}{
+%     	$oneNodeResult \leftarrow oneNodeResult + probListB[i] \times \frac{1}{i+2}$\;
+%     }
+%     $result \leftarrow result + probValue \times oneNodeResult$\;
+% }
+% return $result$\;
+% \caption{Resource Allocation Value Calculation}
+% \end{algorithm}
+
+% \end{frame}
+
+
+\begin{frame}{Link Prediction - Experiment - Dataset}
+\begin{itemize}
+\item Protein-Protein Interaction Network: Two proteins are linked if it is likely that they interact. The core network consists of 2708 proteins and 7123 interactions labeled with probabilities.
+
+\item Enron Network: The dataset is a subset of Enron employees, comprised of emails sent between employees, resulting in a dataset with 50,572 emails among 151 employees. We used the same method as Pfeiffer and Neville in  \cite{pfeiffer2010probabilistic} to assign each edge with a possibility of occurrence. 
+
+\end{itemize}
 
 \end{frame}
 
-\begin{frame}{Link Prediction - An Efficient Algorithm for the Calculation of URA}
+\begin{frame}{Link Prediction - Experiment - Dataset}
 
 
-\begin{figure}
-\includegraphics[scale = 0.35]{5_sample_conquer.png}
-\centering
-\caption{Algorithm Example: Merge Phase}
-\label{example}
-\end{figure}
-
-
-\end{frame}
-
-
-\begin{frame}{Link Prediction - An Efficient Algorithm for the Calculation of URA}
-\begin{equation}
-P_{1\rightarrow m}^n=\sum_{i=max(0,n+k-m)}^{min(n,k)}P_{1\rightarrow k}^i P_{k+1\rightarrow m}^{n-i}
-\label{URA-equation}
-\end{equation}
-
-$A = [P_{1\rightarrow m+2}^0, P_{1\rightarrow m+2}^1, ..., P_{1\rightarrow m+2}^{m+2}]$
-
-$B = [P_{1\rightarrow m}^0, P_{1\rightarrow m}^1, ..., P_{1\rightarrow m}^{m}]$
-
-$C = [P_{m+1\rightarrow m+2}^0, P_{m+1\rightarrow m+2}^1, P_{m+1\rightarrow m+2}^2]$
-
-\begin{align*}
-\left\{
-\begin{aligned}
-P_{m+1\rightarrow m+2}^2 P_{1\rightarrow m}^{m} = P_{1\rightarrow m+2}^{m+2}\\
-P_{m+1\rightarrow m+2}^1 P_{1\rightarrow m}^{m} + P_{m+1\rightarrow m+2}^2 P_{1\rightarrow m}^{m-1} = P_{1\rightarrow m+2}^{m+1}\\
-P_{m+1\rightarrow m+2}^0 P_{1\rightarrow m}^{m} + P_{m+1\rightarrow m+2}^1 P_{1\rightarrow m}^{m-1} + P_{m+1\rightarrow m+2}^2 P_{1\rightarrow m}^{m-2} = P_{1\rightarrow m+2}^{m}\\
-P_{m+1\rightarrow m+2}^0 P_{1\rightarrow m}^{m-1} + P_{m+1\rightarrow m+2}^1 P_{1\rightarrow m}^{m-2} + P_{m+1\rightarrow m+2}^2 P_{1\rightarrow m}^{m-3} = P_{1\rightarrow m+2}^{m-1}\\
-...\\
-P_{m+1\rightarrow m+2}^0 P_{1\rightarrow m}^{3} + P_{m+1\rightarrow m+2}^1 P_{1\rightarrow m}^{2} + P_{m+1\rightarrow m+2}^2 P_{1\rightarrow m}^{1} = P_{1\rightarrow m+2}^3\\
-P_{m+1\rightarrow m+2}^0 P_{1\rightarrow m}^{2} + P_{m+1\rightarrow m+2}^1 P_{1\rightarrow m}^{1} + P_{m+1\rightarrow m+2}^2 P_{1\rightarrow m}^{0} = P_{1\rightarrow m+2}^2\\
-\end{aligned}
-\right.
-\end{align*}
-\end{frame}
-
-\begin{frame}{Link Prediction - An Efficient Algorithm for the Calculation of URA}
-
-\begin{algorithm}[H]
-\KwData{An uncertain graph $\mathcal{G}$.}
-\KwResult{Probability lists for all nodes in $\mathcal{G}$ saved in a hash table $dict$}
-Hash table $dict \leftarrow \{\}$\;
-\For{each node $\mathcal{V}_z \in \mathcal{G}$}{
-Array $uncertainEdgeList \leftarrow$ all uncertain edges connecting to node $\mathcal{V}_z$\;
-$dict[\mathcal{V}_z]\leftarrow kEdgeProbability(uncertainEdgeList)$\;
-}
-return $dict$\;
-\caption{Initialization}
-\end{algorithm}
-
-\end{frame}
-
-
-\begin{frame}{Link Prediction - An Efficient Algorithm for the Calculation of URA}
-
-\begin{algorithm}[H]
-  \scriptsize
-\KwData{Nodes $\mathcal{V}_x$, $\mathcal{V}_y$, an uncertain graph $\mathcal{G}$ and the hash table $dict$ after running Algorithm 2}
-\KwResult{Resource Allocation value for nodes $\mathcal{V}_x$ and $\mathcal{V}_y$ in $\mathcal{G}$}
-$result \leftarrow 0$\;
-\For{each node $\mathcal{V}_z \in \Gamma(x)\cap\Gamma(y)$}{
-Array $uncertainEdgeList \leftarrow [ ]$\;
-$probValue \leftarrow 1$\;
-	\For{each node $\mathcal{V}_m$ connecting to node $\mathcal{V}_z$}{
-    	\If{$\mathcal{V}_m=\mathcal{V}_x$ or $\mathcal{V}_m=\mathcal{V}_y$}{
-        	$probValue \leftarrow probValue \times \mathcal{P}_{m,z}$\;
-        	add $\mathcal{P}_{m,z}$ to $uncertainEdgeList$\;
-        }
-    }
-    Array $probListC \leftarrow kEdgeProbability(uncertainEdgeList)$\;
-    Array $probListA \leftarrow dict[\mathcal{V}_z]$\;
-    Array $probListB \leftarrow $ use $probListA$ and $probListC$ to calculate $probListB$ based on the Equation (\ref{URA-equation})\;
-    $oneNodeResult \leftarrow 0$\;
-    \For{each $i \in [0,len(probListB))$}{
-    	$oneNodeResult \leftarrow oneNodeResult + probListB[i] \times \frac{1}{i+2}$\;
-    }
-    $result \leftarrow result + probValue \times oneNodeResult$\;
-}
-return $result$\;
-\caption{Resource Allocation Value Calculation}
-\end{algorithm}
+Synthetic Uncertain Network Based on Deterministic Network: The dataset we used here is USAir. The US air transportation network contains 332 airports and 2126 airlines. Based on this network, we generated its corresponding uncertain network based on three assumptions: 
+\begin{itemize}
+\item Edges that exist in deterministic networks tend to have high probability in corresponding uncertain networks.
+\item In uncertain networks, except existential edges, there should exist some edges which do not exist in deterministic networks, and they tend to have low probability.
+\item Based on a power law distribution, nodes with high degree are more likely to have new added edges.
+\end{itemize}
 
 \end{frame}
 
@@ -495,6 +625,19 @@ LNB-RA         & \begin{tabular}[c]{@{}c@{}}Pay no attention to probabilities an
 \end{tabular}
 \end{table}
 
+\end{frame}
+
+
+
+\begin{frame}{Link Prediction - Experiment}
+The observed edges, $E$, are divided into two separate sets: training set $E^T$, is regarded as known information; and probe set $E^P$, is used for testing and no information therein is allowed to be used for prediction. Clearly, we have $E^T \cup E^P = E$ and $E^T \cap E^P = $\o.
+
+\begin{figure}
+\centering
+\includegraphics[scale = 0.4]{evaluation.png}
+\caption{Evaluation procedures: Hidden true links are compared to predicted links. How many predicted links where truly there?}
+\label{example}
+\end{figure}
 \end{frame}
 
 
@@ -534,10 +677,14 @@ Synthetic Network & 0.5852 & 0.5992 & 0.5962 & 0.5885 \\ \hline
 
 \begin{figure}
 \centering
-\includegraphics[scale = 0.9]{Result-Fig1.png}
+\includegraphics[scale = 0.8]{Result-Fig1.png}
 \caption{Visual comparison of the accuracy for link prediction with UCN and URA with wighted and unweighted versions.}
 \label{example}
 \end{figure}
+\begin{itemize}
+\item UCN and URA can significantly outperform their original and weighted ones when dealing with uncertain networks. 
+\item It is worthwhile to take every possible worlds into account.
+\end{itemize}
 
 \end{frame}
 
@@ -553,10 +700,39 @@ Synthetic Network & 0.5852 & 0.5992 & 0.5962 & 0.5885 \\ \hline
 \label{example}
 \end{figure}
 
+\begin{itemize}
+\item Our metrics (UCN and URA) can outperform the other four baseline methods on PPI and Synthetic datasets. 
+\item The Resource Allocation metrics are not good choices for Enron dataset. Our UCN wins the contest for Enron.
+\end{itemize}
 \end{frame}
 
 \section{Local Community Detection}
 
+\begin{frame}{Local Community Detection}
+The nodes in many networks fall naturally into groups or communities. Nodes in the same community are densely connected.
+
+Community detection is the task of finding such communities in complex networks based on edges between nodes. 
+\begin{itemize}
+\item key to understanding the structure of complex networks.
+\item extract useful information from networks.
+\item various applications: worldwide web, social networks
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Local Community Detection - Previous Work}
+To solve the problem of community detection with edge uncertainty: 
+\begin{itemize}
+\item Krogan and his colleagues converted the uncertain network into a conventional binary network by thresholding the likelihoods \cite{krogan2006global}.
+\item Dahlin and Svenson proposed a method which is based on sampling from an ensemble of deterministic networks that are consistent with the available information about the uncertain networks \cite{dahlin2011method}.
+\item Liu et al. developed a novel k-means algorithm to solve the uncertain clustering problem \cite{liureliable}.
+\end{itemize}
+
+Problems:
+
+All these approaches require knowledge of the entire graph structure.
+
+\end{frame}
 
 \begin{frame}{Local Community Detection - Definition}
 
@@ -570,7 +746,7 @@ Synthetic Network & 0.5852 & 0.5992 & 0.5962 & 0.5885 \\ \hline
 
 $\mathcal{D}$ denotes the known local community of the graph (for the start node). 
 
-$\mathcal{S}$ contains nodes that are possible neighbors of nodes in $\mathcal{D}$ but do not belong to $\mathcal{D}$. 
+$\mathcal{S}$ (shell node set): contains nodes that are possible neighbors of nodes in $\mathcal{D}$ but do not belong to $\mathcal{D}$. 
 
 Nodes in $\mathcal{D}$ can be split into two groups: the core node set $\mathcal{C}$, where any node $c_i\in \mathcal{C}$ has no outward links, which means all possible neighbors of $c_i$ belong to $\mathcal{D}$; and the boundary node set $\mathcal{B}$, where any node $b_i\in \mathcal{B}$ has at least one possible neighbor in $\mathcal{S}$.
 \end{frame}
@@ -656,13 +832,53 @@ Nodes in $\mathcal{D}$ can be split into two groups: the core node set $\mathcal
 \end{frame}
 
 
+% \begin{frame}{Local Community Detection - Previous Work}
+% \small
+% \begin{equation}
+% \mathcal{UR} = \frac{\mathbb{E}(\mathcal{B}_{in\_edge})}{\mathbb{E}(\mathcal{B}_{in\_edge})+\mathbb{E}(\mathcal{B}_{out\_edge})}
+% \end{equation}
+% where $\mathbb{E}(\mathcal{B}_{in\_edge})$ is the expected number of edges that connect boundary nodes and other nodes in $\mathcal{D}$; while $\mathbb{E}(\mathcal{B}_{out\_edge})$ is the expected number of edges that connect boundary nodes and nodes in $\mathcal{S}$.
+
+
+% \begin{columns}[T,onlytextwidth]
+%     \column{0.6\textwidth}
+%       \begin{figure}
+%       \centering
+%       \includegraphics[scale = 0.075]{toy_example.jpeg}
+%       \caption{An example showing the problem of only using $\mathcal{UR}$ to find the local community.}
+%       \label{problem_example}
+%       \end{figure}
+
+%     \column{0.4\textwidth}
+%     .
+    
+%      The $\mathcal{UR}$ of the community, after adding $\mathcal{V}_1, \mathcal{V}_3$ or $\mathcal{V}_5$, are all 
+% \begin{align*}
+% \frac{0.9}{4\times0.9+(4\times0.9+0.8)+0.9}=0.1011
+% \end{align*}
+% \newline
+% After adding node $\mathcal{V}_2$ or $\mathcal{V}_4$, the $\mathcal{UR}$ will be less than 0.1011 due to extra outward edges. The $\mathcal{UR}$ of the community after adding node $\mathcal{V}_7$ is 
+% \begin{align*}
+% \frac{0.8}{5\times0.9+3\times0.8+0.8}=0.1039
+% \end{align*}
+    
+%   \end{columns}
+
+% \end{frame}
+
 \begin{frame}{Local Community Detection - Previous Work}
-\small
 \begin{equation}
 \mathcal{UR} = \frac{\mathbb{E}(\mathcal{B}_{in\_edge})}{\mathbb{E}(\mathcal{B}_{in\_edge})+\mathbb{E}(\mathcal{B}_{out\_edge})}
 \end{equation}
 where $\mathbb{E}(\mathcal{B}_{in\_edge})$ is the expected number of edges that connect boundary nodes and other nodes in $\mathcal{D}$; while $\mathbb{E}(\mathcal{B}_{out\_edge})$ is the expected number of edges that connect boundary nodes and nodes in $\mathcal{S}$.
+\end{frame}
 
+\begin{frame}{Local Community Detection - Previous Work}
+\small
+\begin{itemize}
+\item Noise edges (missed observations, misreporting or wrong inference)
+\item If the algorithm starts from a node $\mathcal{V}_i$ in community $A$, the expansion step might fall into a different neighbor community $B$.
+\end{itemize}
 
 \begin{columns}[T,onlytextwidth]
     \column{0.6\textwidth}
@@ -689,6 +905,26 @@ After adding node $\mathcal{V}_2$ or $\mathcal{V}_4$, the $\mathcal{UR}$ will be
   \end{columns}
 
 \end{frame}
+
+\begin{frame}{Local Community Detection - Problems?}
+
+\begin{itemize}
+\item $\mathcal{UR}$ only measures the sharpness of the boundary.
+\item The boundary between communities becomes less clear due to the appearance of noise edges.
+\item At the first few steps of the expansion steps, the sharpness of the boundary is not really important.
+\item $\mathcal{UR}$ only cares about the nodes in $\mathcal{D}$ and pays no attention to the difference between shell nodes and unknown area’s nodes.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Local Community Detection - Ideas}
+
+\begin{itemize}
+\item Though shell nodes are not part of the community, they can be regarded as the neighbors of the community.
+\item Nodes in the same community share some common neighbors, even though they do not have direct links with each other.
+\end{itemize}
+\end{frame}
+
+
 
 \begin{frame}{Local Community Detection - New Measure $\mathcal{K}$}
 
@@ -753,10 +989,10 @@ while $\mathbb{E}(N_{i,shell\_edge})$ is the expected number of edges that conne
 
 
 \begin{frame}{Local Community Detection - Experiment - Dataset}
-
-The karate network \cite{zachary1977information} describes friendships between members of a karate club at a U.S. university in 1977. The core network consists of 34 nodes and 78 edges. The club fractured into two parts during the study and the resulting two groups are the labels used for the external evaluation. It is assumed that the community structure can be recovered using a good community detection algorithm.
-
-The football network \cite{girvan2002community} contains all the Division IA college football teams and the edges indicate games during the fall of 2000. The total number of teams is 115 and the total number of matches is 613. The labels are the conferences to which each team belongs and matches are most often played between teams from the same conference. Therefore communities detected in this network should indicate the different conferences. 
+\begin{itemize}
+\item The karate network \cite{zachary1977information} describes friendships between members of a karate club at a U.S. university in 1977. The core network consists of 34 nodes and 78 edges. The club fractured into two parts during the study and the resulting two groups are the labels used for the external evaluation. 
+\item The football network \cite{girvan2002community} contains all the Division IA college football teams and the edges indicate games during the fall of 2000. The total number of teams is 115 and the total number of matches is 613. The labels are the conferences to which each team belongs and matches are most often played between teams from the same conference. 
+\end{itemize}
 
 \end{frame}
 
@@ -765,7 +1001,7 @@ The football network \cite{girvan2002community} contains all the Division IA col
 
 \begin{frame}{Local Community Detection - Experiment - Dataset}
 
-The synthetic network model used in this paper is adopted from \cite{lancichinetti2009benchmarks}. The authors have constructed algorithms to generate synthetic networks with community structures, which has become a standard benchmark for community detection using synthetic networks. The networks are generated using six different input parameters, shown in the Table \ref{synthetic_network_parameter}, together with the values used in this paper. These parameters allow for the generation of families of networks with desired properties.
+The synthetic network model: adopted from \cite{lancichinetti2009benchmarks}. The networks are generated using six different input parameters, shown in the Table \ref{synthetic_network_parameter}. These parameters allow for the generation of families of networks with desired properties.
 \begin{table}[]
 \centering
 \caption{Parameters for generating synthetic networks}
@@ -806,7 +1042,26 @@ ULouvain                                                                       &
 
 \end{frame}
 
+\begin{frame}{Local Community Detection - Experiment - Supervised Evaluation}
 
+For each network, each node is taken as the start point for algorithms one by one. Assume the start point is $\mathcal{V}_i$:
+
+\begin{itemize}
+\item $\mathcal{D}_{i}$ represents the local community for the start point $\mathcal{V}_i$ after running local community detection algorithms.
+\item $\mathcal{D}_{i^\prime}$ represents the set of nodes which have the same label as the start node $\mathcal{V}_i$.
+\end{itemize}
+
+\begin{equation}
+\text{precision} = \frac{\sum_{\mathcal{V}_i\in \mathcal{G}}|\mathcal{D}_{i} \cap \mathcal{D}_{i\prime}|}{\sum_{\mathcal{V}_i\in \mathcal{G}}|\mathcal{D}_{i}|}
+\end{equation}
+\begin{equation}
+\text{recall} = \frac{\sum_{\mathcal{V}_i\in \mathcal{G}}|\mathcal{D}_{i} \cap \mathcal{D}_{i\prime}|}{\sum_{\mathcal{V}_i\in \mathcal{G}}|\mathcal{D}_{i\prime}|}
+\end{equation}
+\begin{equation}
+\text{F1-measure} = \frac{2}{\frac{1}{\text{precision}}+\frac{1}{\text{recall}}}
+\end{equation}
+
+\end{frame}
 
 
 
@@ -823,27 +1078,49 @@ ULouvain                                                                       &
 
 \begin{frame}{Local Community Detection - Experiment - Supervised Evaluation}
 
-\begin{figure}
+
+      \begin{figure}
       \centering
-      
-      \begin{subfigure}[b]{\textwidth}
-         \includegraphics[scale = 0.11]{image4_change.jpeg}
-         \centering
-      \end{subfigure}
 
       \begin{subfigure}[b]{\textwidth}
-         \includegraphics[scale = 0.11]{image5.jpeg}
+         \includegraphics[scale = 0.12]{image5.jpeg}
          \centering
       \end{subfigure}
 
 	\begin{subfigure}[b]{\textwidth}
-         \includegraphics[scale = 0.11]{image6.jpeg}
+         \includegraphics[scale = 0.12]{image6.jpeg}
          \centering
       \end{subfigure}
 
       % \caption{Algorithm results on karate club, football and synthetic networks. For each network, we add 10\%, 20\%, 30\% and 40\% non-existential edges to the original network. The original network is also regarded as a special case of uncertain network. For each uncertain network, we compare our algorithm (UR+K) with the other 4 algorithms. The precision, recall and F1-measure values of each algorithm are all shown in the graphs. The F1-measure values gained by different algorithms are represented by different colored bars. Each F1-measure value's precision and recall values are represented by its inner black bar and external white bar respectively. }%For example, the part wrapped in a red frame represents the results gained by algorithm R on original karate club data. The F1-measure, precision and recall values are 0.6603, 0.848 and 0.5406 respectively.}
     \label{cl_enron}
     \end{figure}
+
+1. Our algorithm (UR+K) can significantly outperform other algorithms in terms of F1-measure in karate club dataset and football dataset.
+
+2. Get competitive detection accuracy in synthetic network. (Our algorithm uses local information, while Louvain and ULouvain use global information.)
+
+
+
+
+
+
+\end{frame}
+
+
+\begin{frame}{Local Community Detection - Experiment - Unsupervised Evaluation}
+Problems of supervised evaluation:
+\begin{itemize}
+\item When we evaluate our algorithm in the supervised way, we assume that uncertain networks have the same community ground truth as their corresponding deterministic networks.
+\item With the increase in the number of noise edges, some communities may merge into one community.
+\end{itemize}
+
+Unsupervised Evaluation:
+\begin{itemize}
+\item Use local modularity $\mathcal{UR}$ to measure the quality of the local community.
+\item Compare local modularity $\mathcal{UR}$ values after running different algorithms.
+\end{itemize}
+
 \end{frame}
 
 
@@ -854,7 +1131,7 @@ ULouvain                                                                       &
 
 \begin{table}[h]
 \centering
-\caption{$\mathcal{UR}$ on Karate Club Data}
+\caption{$\mathcal{UR}$ on Karate Club Network, Football Network and Synthetic Network.}
 \label{unsupervised_karate}
 \begin{tabular}{c|c|c|c|c|c}
 \hline
@@ -869,7 +1146,7 @@ No    & 0.5787 & 0.5789 & \textbf{0.654}  & 0.5604  & 0.5604   \\ \hline
 
 \begin{table}[h]
 \centering
-\caption{$\mathcal{UR}$ on Football Data}
+%\caption{$\mathcal{UR}$ on Football Data}
 \label{unsupervised_football}
 \begin{tabular}{c|c|c|c|c|c}
 \hline
@@ -884,7 +1161,7 @@ No    & 0.5065 & 0.5057 & 0.5327 & \textbf{0.5497} & \textbf{0.5497} \\ \hline
 
 \begin{table}[h]
 \centering
-\caption{$\mathcal{UR}$ on Synthetic Data}
+%\caption{$\mathcal{UR}$ on Synthetic Data}
 \label{unsupervised_synthetic}
 \begin{tabular}{c|c|c|c|c|c}
 \hline
@@ -896,29 +1173,29 @@ No    & 0.6018 & 0.6019 & \textbf{0.6537} & \textbf{0.6537} & \textbf{0.6537} \\
 40\%  & 0.5232 & 0.4735 & \textbf{0.5742} & 0.4635          & 0.4642          \\ \hline
 \end{tabular}
 \end{table}
-
+\small
+UR algorithm always chooses the node which gives the largest increase of $\mathcal{UR}$; while $\mathcal{UR}$ value is not mainly considered in the first few steps in our algorithm, our algorithm finally achieved higher $\mathcal{UR}$ values than the UR algorithm on all datasets.
 \end{frame}
 
 
 \begin{frame}{Local Community Detection - Experiment - Hyper-Parameter Evaluation}
-
+\small
+Repeat previous supervised evaluation experiments over a range of different $\lambda$ values:
 \begin{figure}[h]
 \begin{subfigure}[b]{\textwidth}
-\includegraphics[scale = 0.13]{para1.jpeg}
-\includegraphics[scale = 0.13]{para2.jpeg}
+\includegraphics[scale = 0.12]{para1.jpeg}
+\includegraphics[scale = 0.12]{para2.jpeg}
 \centering
 \end{subfigure}
 \begin{subfigure}[b]{\textwidth}
-\includegraphics[scale = 0.13]{para3.jpeg}
+\includegraphics[scale = 0.12]{para3.jpeg}
 \centering
 \end{subfigure}
-\caption{Hyper-parameter Validation. For each network, we add 10\%, 20\%, 30\% and 40\% non-existential edges to the original network. The original network is also regarded as a special case of uncertain network.}
+%\caption{Hyper-parameter Validation. For each network, we add 10\%, 20\%, 30\% and 40\% non-existential edges to the original network. The original network is also regarded as a special case of uncertain network.}
 \label{hyper}
 \end{figure}
-
+In most cases, $\lambda=3$ performs the best compared to the other values.
 \end{frame}
-
-
 
 \section{Centrality and Rank}
 
@@ -936,7 +1213,7 @@ No    & 0.6018 & 0.6019 & \textbf{0.6537} & \textbf{0.6537} & \textbf{0.6537} \\
 %  Note, that you have to have Mozilla's \emph{Fira Sans} font and XeTeX
  % installed to enjoy this wonderful typography.
 
-In graph theory, \textbf{centrality} identifies the importance of vertices within a graph.
+\textbf{Centrality} identifies the importance of vertices within a graph.
 %, which is depicted by \textbf{shortest path}
 \vspace{-0.11in}
 \begin{figure}[H]
@@ -950,9 +1227,9 @@ In graph theory, \textbf{centrality} identifies the importance of vertices withi
 \begin{frame}
 \frametitle{Centrality and Rank - Background}
 
-\textbf{Betweenness Centrality}: Measures how many times a node n occurs in a shortest path between any other 2 nodes in the graph;
+\textbf{Betweenness Centrality}: Measures how many times a node occurs in a shortest path between any other 2 nodes in the graph;
 
-\textbf{Closeness Centrality}: Mean shortest path distance between a node n and all other nodes reacheable from it;
+\textbf{Closeness Centrality}: Mean shortest path distance between a node and all other nodes reacheable from it;
 
 \end{frame}
 
@@ -1017,7 +1294,7 @@ W(e_{uv}) = -log(P(e_{uv}))
 \item $P(e_{uv})$ is the probability defined on edge $e_{uv}$
 \item $W(e_{uv})$ is the new weight defined by the negative logarithm of edge probability
 \end{itemize}
-\item Thus probabilities are converted to weights and all existential graph mining methods on discrete graphs become accessible under this framework
+\item Thus probabilities are converted to weights and all existential centrality measures on deterministic graphs become accessible under this framework
 \end{itemize}
 \end{frame}
 
@@ -1072,8 +1349,7 @@ P(\rho_{ij}) = \prod_{e_{uv} \in E}P(e_{uv})
 % \end{frame}
 % }
 
-\section{Our Approach}
-\begin{frame}[fragile]{Inversed Probabilistic Graph}
+\begin{frame}[fragile]{Centrality and Rank - Our Approach - Inversed Probabilistic Graph}
 %       \begin{verbatim}The theme provides sensible defaults to
 % \emph{emphasize} text, \alert{accent} parts
 % or show \textbf{bold} results.\end{verbatim}
@@ -1093,18 +1369,15 @@ To circumvent the relatively heavy computation of \textit{Most Probable Path} me
 \item In experiment we use $\lambda = 0.4$
 \end{itemize}
 \end{itemize}
-Again, we can apply existential graph mining algorithms under this framework
+Again, we can apply existential centrality measures under this framework
 \end{frame}
 
-\section{Experiment Results}
 
-
-\begin{frame}
-\frametitle{Illustrative Experiment}
+\begin{frame}{Centrality and Rank - Illustrative Experiment}
 \begin{itemize}
-\item Firstly, we draw two graphs, each demonstrating the centrality ranking evolution of selected individuals in the Enron dataset, as \textit{Pfeiffer et al} did in \cite{pfeiffer2010probabilistic}, \cite{pfeiffer2011methods}
+\item Firstly, we draw a graph demonstrating the centrality ranking evolution of selected individuals in the Enron dataset.
 
-\item We evaluate our method by looking at each graph if centrality evolutions correspond to the background provided in the Enron dataset
+\item We evaluate our method by looking at the graph if centrality evolutions correspond to the background provided in the Enron dataset
 
 
 \end{itemize}
@@ -1127,24 +1400,24 @@ Again, we can apply existential graph mining algorithms under this framework
 \end{frame}
 
 
-\begin{frame}
-\frametitle{Centrality Ranking over Time in Enron: Kitchen and Lavorato}
-\begin{figure}[H]
-\centering
-\includegraphics[scale = 0.3]{rank_change2.png}
-\caption{Centrality ranking evolution of Kitchen and Lavorato}
-%\label{probabilistic_graph}
-\end{figure}
-\vspace{-0.15in}
-\begin{itemize}
-\item Kitchen and Lavorato were executives for Enron Americas
-\item Lavorato is only important during Skilling's tenure as CEO; his centrality drops noticeably otherwise. This suggests that Skilling and Lavorato were extremely close
-\item On the other hand, Kitchen had extremely high rankings throughout
-\end{itemize}
-\end{frame}
+% \begin{frame}
+% \frametitle{Centrality Ranking over Time in Enron: Kitchen and Lavorato}
+% \begin{figure}[H]
+% \centering
+% \includegraphics[scale = 0.3]{rank_change2.png}
+% \caption{Centrality ranking evolution of Kitchen and Lavorato}
+% %\label{probabilistic_graph}
+% \end{figure}
+% \vspace{-0.15in}
+% \begin{itemize}
+% \item Kitchen and Lavorato were executives for Enron Americas
+% \item Lavorato is only important during Skilling's tenure as CEO; his centrality drops noticeably otherwise. This suggests that Skilling and Lavorato were extremely close
+% \item On the other hand, Kitchen had extremely high rankings throughout
+% \end{itemize}
+% \end{frame}
 
 \begin{frame}
-\frametitle{Comparative Experiment}
+\frametitle{Centrality and Rank - Comparative Experiment}
 \begin{itemize}
 \item Secondly, we compare the two methods, \textit{Negative Logarithm} and \textit{Most Probable Path} that are illustrated above, with our method on 
 \begin{itemize}
@@ -1161,7 +1434,7 @@ Again, we can apply existential graph mining algorithms under this framework
 
 
 \begin{frame}
-\frametitle{Centralities on Enron Dataset}
+\frametitle{Centrality and Rank - Centralities on Enron Dataset}
 \vspace{0.15in}
 \begin{figure}[H]
 \centering
@@ -1210,7 +1483,7 @@ Again, we can apply existential graph mining algorithms under this framework
 
 
 \begin{frame}
-\frametitle{Centralities on Simulated Unweighted Graphs}
+\frametitle{Centrality and Rank - Centralities on Simulated Unweighted Graphs}
 \vspace{0.15in}
 \begin{figure}[H]
 \centering
@@ -1258,7 +1531,7 @@ Again, we can apply existential graph mining algorithms under this framework
 
 
 \begin{frame}
-\frametitle{Centralities on Simulated Weighted Graphs}
+\frametitle{Centrality and Rank - Centralities on Simulated Weighted Graphs}
 \vspace{0.15in}
 \begin{figure}[H]
 \centering
@@ -1306,7 +1579,7 @@ Again, we can apply existential graph mining algorithms under this framework
 
 
 \begin{frame}
-\frametitle{Selection of Optimal Hyper-parameter $\lambda$}
+\frametitle{Centrality and Rank - Selection of Optimal Hyper-parameter $\lambda$}
 \vspace{0.15in}
 \begin{figure}[H]
 \centering
@@ -1343,24 +1616,22 @@ Again, we can apply existential graph mining algorithms under this framework
 %\caption{Betweenness Centrality on Enron Dataset}
 \end{frame}
 
-
-
 \section{Summary and Future Direction}
 \begin{frame}
 \frametitle{Summary}
 \begin{itemize}
-\item In this project we investigated the problem of calculating shortest path and centralities in the presence of edge uncertainty
-\item We demonstrated the inability of taking the negative logarithm of edge probability as new edge weight
-\item Based on the method of \textit{Most Probable Path}, we proposed a new and more direct way of computing shortest path and centralities of a graph, \textbf{Inversed Probabilistic Graph}
-\item We empirically showed that under multiple circumstances, our approach outperforms previous approaches on related applications
+\item For the link prediction task, uncertain edges result in a very large number of possible worlds, and we propose a divide and conquer algorithm to reduce time complexity. 
+\item For the local community detection task, we find periphery nodes tend to be grouped into their neighbor communities in uncertain networks, and we introduce a new measure $\mathcal{K}$ to help our algorithm find reliable local communities.
+\item For the entity ranking task, we aim to propose a algorithm which is able to work effectively in both unweighted and weighted uncertain networks. By taking the inverse of edge probability with a hyper-parameter, we can use existing centrality measures to rank nodes. 
 \end{itemize}
 \end{frame}
 
 \begin{frame}
 \frametitle{Future Direction}
-Future directions can include research on
+Future directions can include research on:
 \begin{itemize}
-\item How to detect community in the presence of edge uncertainty.
+\item Consider to solve complex network analysis problems in the context of other types of uncertainty.
+\item Graph representation withe Edge uncertainty: learn representations that encode structural information about the graph.
 \end{itemize}
 \end{frame}
 
@@ -1564,6 +1835,10 @@ Future directions can include research on
 %   \begin{center}\ccbysa\end{center}
 
 % \end{frame}
+
+\begin{frame}[standout]
+  Thank you!
+\end{frame}
 
 \begin{frame}[standout]
   Questions?
