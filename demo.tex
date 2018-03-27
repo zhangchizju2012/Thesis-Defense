@@ -86,16 +86,34 @@ with Edge Uncertainty}
 \section{Introduction}
 
 \begin{frame}
-\frametitle{Motivation: Uncertainty}
+\frametitle{Motivation: Complex Network Analysis}
 \begin{itemize}
-\item Traditional graph centrality measures are applied to discrete, static graphs, where binary edges represent the "presence" or "absence" of a relationship
-\item In practice, however, edge uncertainty arises almost everywhere:
-\begin{itemize}
-\item When considering the evolution of networks overtime, there is inherent uncertainty about the strength of underlying relationships at a particular point in time
-\item Even in static graphs, it is sometimes uncertain whether the interaction between two nodes is existed, eg. protein-protein interaction network, crime evidence network, etc.
-\end{itemize}
+\item Many datasets can be represented by networks consisting of a set of nodes and edges connecting these nodes. 
+\item Examples: protein-protein interaction networks, food webs, social networks, air transportation networks, collaboration networks and the worldwide web (WWW).
+\item Applications: link prediction, community detection and entity ranking.
+% \item Traditional graph centrality measures are applied to discrete, static graphs, where binary edges represent the "presence" or "absence" of a relationship
+% \item In practice, however, edge uncertainty arises almost everywhere:
+% \begin{itemize}
+% \item When considering the evolution of networks overtime, there is inherent uncertainty about the strength of underlying relationships at a particular point in time
+% \item Even in static graphs, it is sometimes uncertain whether the interaction between two nodes is existed, eg. protein-protein interaction network, crime evidence network, etc.
+% \end{itemize}
 \end{itemize}
 \end{frame}
+
+\begin{frame}
+\frametitle{Motivation: Uncertainty}
+\begin{itemize}
+\item Most previous studies on complex network analysis have focused on networks under where the structure is exactly known. 
+\item Increasing number of networks have uncertainty and imprecise information -> becomes a critical impediment to understanding and using the information contained in such graphs.
+\begin{itemize}
+\item data-collection process
+\item machine-learning techniques utilized to preprocess the data.
+\end{itemize}
+\item Different kinds of uncertainty: edge uncertainty, node uncertainty, and direction uncertainty.
+\end{itemize}
+
+\end{frame}
+
 
 \begin{frame}
 \frametitle{Motivation: Probabilistic Graph}
@@ -393,7 +411,7 @@ $K$ is the nodes' average degree in the uncertain network.
 \begin{frame}{Link Prediction - An Efficient Algorithm for the Calculation of URA}
 
 \begin{align*}
-ss_{xy}&=\sum_{G\in \mathcal{G}}( Pr(G)\times\sum_{z\in \Gamma_G(x)\cap\Gamma_G(y)}\frac{1}{k_G(z)}) \textcolor{red}{\text{$\Rightarrow O(2^{|\mathcal{E}|}k)$}}\\
+s_{xy}&=\sum_{G\in \mathcal{G}}( Pr(G)\times\sum_{z\in \Gamma_G(x)\cap\Gamma_G(y)}\frac{1}{k_G(z)}) \textcolor{red}{\text{$\Rightarrow O(2^{|\mathcal{E}|}k)$}}\\
 &=\sum_{z\in \Gamma(x)\cap\Gamma(y)}\mathcal{P}_{x,z}\times\mathcal{P}_{y,z} \times \sum_{n=0}^{m}(P_{1\rightarrow m}^n \times \frac{1}{n+2})
 \end{align*}
 
@@ -468,6 +486,19 @@ We need to compute $P_{1\rightarrow m}^0, P_{1\rightarrow m}^1, ..., P_{1\righta
 
 
 \end{frame}
+
+\begin{frame}{Link Prediction - An Efficient Algorithm for the Calculation of URA}
+
+After compute $P_{1\rightarrow m}^0, P_{1\rightarrow m}^1, ..., P_{1\rightarrow m}^m$:
+
+\begin{align*}
+s_{xy}&=\sum_{G\in \mathcal{G}}( Pr(G)\times\sum_{z\in \Gamma_G(x)\cap\Gamma_G(y)}\frac{1}{k_G(z)}) \textcolor{red}{\text{$\Rightarrow O(2^{|\mathcal{E}|}k)$}}\\
+&=\sum_{z\in \Gamma(x)\cap\Gamma(y)}\mathcal{P}_{x,z}\times\mathcal{P}_{y,z} \times \sum_{n=0}^{m}(P_{1\rightarrow m}^n \times \frac{1}{n+2}) \textcolor{red}{\text{$\Rightarrow O({|\mathcal{E}|}^2k)$}}
+\end{align*}
+
+
+\end{frame}
+
 
 
 \begin{frame}{Link Prediction - An Efficient Algorithm for the Calculation of URA}
@@ -1197,7 +1228,7 @@ Repeat previous supervised evaluation experiments over a range of different $\la
 In most cases, $\lambda=3$ performs the best compared to the other values.
 \end{frame}
 
-\section{Centrality and Rank}
+\section{Entity Ranking}
 
 \begin{frame}{Centrality and Rank - Background}
 
