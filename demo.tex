@@ -538,80 +538,80 @@ return $kEdge(0, uncertainEdgeListLength-1)$\;
 
 \end{frame}
 
-% \begin{frame}{Link Prediction - An Efficient Algorithm for the Calculation of URA}
-% \begin{equation}
-% P_{1\rightarrow m}^n=\sum_{i=max(0,n+k-m)}^{min(n,k)}P_{1\rightarrow k}^i P_{k+1\rightarrow m}^{n-i}
-% \label{URA-equation}
-% \end{equation}
+\begin{frame}{Link Prediction - An Efficient Algorithm for the Calculation of URA}
+\begin{equation}
+P_{1\rightarrow m}^n=\sum_{i=max(0,n+k-m)}^{min(n,k)}P_{1\rightarrow k}^i P_{k+1\rightarrow m}^{n-i}
+\label{URA-equation}
+\end{equation}
 
-% $A = [P_{1\rightarrow m+2}^0, P_{1\rightarrow m+2}^1, ..., P_{1\rightarrow m+2}^{m+2}]$
+$A = [P_{1\rightarrow m+2}^0, P_{1\rightarrow m+2}^1, ..., P_{1\rightarrow m+2}^{m+2}]$
 
-% $B = [P_{1\rightarrow m}^0, P_{1\rightarrow m}^1, ..., P_{1\rightarrow m}^{m}]$
+$B = [P_{1\rightarrow m}^0, P_{1\rightarrow m}^1, ..., P_{1\rightarrow m}^{m}]$
 
-% $C = [P_{m+1\rightarrow m+2}^0, P_{m+1\rightarrow m+2}^1, P_{m+1\rightarrow m+2}^2]$
+$C = [P_{m+1\rightarrow m+2}^0, P_{m+1\rightarrow m+2}^1, P_{m+1\rightarrow m+2}^2]$
 
-% \begin{align*}
-% \left\{
-% \begin{aligned}
-% P_{m+1\rightarrow m+2}^2 P_{1\rightarrow m}^{m} = P_{1\rightarrow m+2}^{m+2}\\
-% P_{m+1\rightarrow m+2}^1 P_{1\rightarrow m}^{m} + P_{m+1\rightarrow m+2}^2 P_{1\rightarrow m}^{m-1} = P_{1\rightarrow m+2}^{m+1}\\
-% P_{m+1\rightarrow m+2}^0 P_{1\rightarrow m}^{m} + P_{m+1\rightarrow m+2}^1 P_{1\rightarrow m}^{m-1} + P_{m+1\rightarrow m+2}^2 P_{1\rightarrow m}^{m-2} = P_{1\rightarrow m+2}^{m}\\
-% P_{m+1\rightarrow m+2}^0 P_{1\rightarrow m}^{m-1} + P_{m+1\rightarrow m+2}^1 P_{1\rightarrow m}^{m-2} + P_{m+1\rightarrow m+2}^2 P_{1\rightarrow m}^{m-3} = P_{1\rightarrow m+2}^{m-1}\\
-% ...\\
-% P_{m+1\rightarrow m+2}^0 P_{1\rightarrow m}^{3} + P_{m+1\rightarrow m+2}^1 P_{1\rightarrow m}^{2} + P_{m+1\rightarrow m+2}^2 P_{1\rightarrow m}^{1} = P_{1\rightarrow m+2}^3\\
-% P_{m+1\rightarrow m+2}^0 P_{1\rightarrow m}^{2} + P_{m+1\rightarrow m+2}^1 P_{1\rightarrow m}^{1} + P_{m+1\rightarrow m+2}^2 P_{1\rightarrow m}^{0} = P_{1\rightarrow m+2}^2\\
-% \end{aligned}
-% \right.
-% \end{align*}
-% \end{frame}
+\begin{align*}
+\left\{
+\begin{aligned}
+P_{m+1\rightarrow m+2}^2 P_{1\rightarrow m}^{m} = P_{1\rightarrow m+2}^{m+2}\\
+P_{m+1\rightarrow m+2}^1 P_{1\rightarrow m}^{m} + P_{m+1\rightarrow m+2}^2 P_{1\rightarrow m}^{m-1} = P_{1\rightarrow m+2}^{m+1}\\
+P_{m+1\rightarrow m+2}^0 P_{1\rightarrow m}^{m} + P_{m+1\rightarrow m+2}^1 P_{1\rightarrow m}^{m-1} + P_{m+1\rightarrow m+2}^2 P_{1\rightarrow m}^{m-2} = P_{1\rightarrow m+2}^{m}\\
+P_{m+1\rightarrow m+2}^0 P_{1\rightarrow m}^{m-1} + P_{m+1\rightarrow m+2}^1 P_{1\rightarrow m}^{m-2} + P_{m+1\rightarrow m+2}^2 P_{1\rightarrow m}^{m-3} = P_{1\rightarrow m+2}^{m-1}\\
+...\\
+P_{m+1\rightarrow m+2}^0 P_{1\rightarrow m}^{3} + P_{m+1\rightarrow m+2}^1 P_{1\rightarrow m}^{2} + P_{m+1\rightarrow m+2}^2 P_{1\rightarrow m}^{1} = P_{1\rightarrow m+2}^3\\
+P_{m+1\rightarrow m+2}^0 P_{1\rightarrow m}^{2} + P_{m+1\rightarrow m+2}^1 P_{1\rightarrow m}^{1} + P_{m+1\rightarrow m+2}^2 P_{1\rightarrow m}^{0} = P_{1\rightarrow m+2}^2\\
+\end{aligned}
+\right.
+\end{align*}
+\end{frame}
 
-% \begin{frame}{Link Prediction - An Efficient Algorithm for the Calculation of URA}
+\begin{frame}{Link Prediction - An Efficient Algorithm for the Calculation of URA}
 
-% \begin{algorithm}[H]
-% \KwData{An uncertain graph $\mathcal{G}$.}
-% \KwResult{Probability lists for all nodes in $\mathcal{G}$ saved in a hash table $dict$}
-% Hash table $dict \leftarrow \{\}$\;
-% \For{each node $\mathcal{V}_z \in \mathcal{G}$}{
-% Array $uncertainEdgeList \leftarrow$ all uncertain edges connecting to node $\mathcal{V}_z$\;
-% $dict[\mathcal{V}_z]\leftarrow kEdgeProbability(uncertainEdgeList)$\;
-% }
-% return $dict$\;
-% \caption{Initialization}
-% \end{algorithm}
+\begin{algorithm}[H]
+\KwData{An uncertain graph $\mathcal{G}$.}
+\KwResult{Probability lists for all nodes in $\mathcal{G}$ saved in a hash table $dict$}
+Hash table $dict \leftarrow \{\}$\;
+\For{each node $\mathcal{V}_z \in \mathcal{G}$}{
+Array $uncertainEdgeList \leftarrow$ all uncertain edges connecting to node $\mathcal{V}_z$\;
+$dict[\mathcal{V}_z]\leftarrow kEdgeProbability(uncertainEdgeList)$\;
+}
+return $dict$\;
+\caption{Initialization}
+\end{algorithm}
 
-% \end{frame}
+\end{frame}
 
 
-% \begin{frame}{Link Prediction - An Efficient Algorithm for the Calculation of URA}
+\begin{frame}{Link Prediction - An Efficient Algorithm for the Calculation of URA}
 
-% \begin{algorithm}[H]
-%   \scriptsize
-% \KwData{Nodes $\mathcal{V}_x$, $\mathcal{V}_y$, an uncertain graph $\mathcal{G}$ and the hash table $dict$ after running Algorithm 2}
-% \KwResult{Resource Allocation value for nodes $\mathcal{V}_x$ and $\mathcal{V}_y$ in $\mathcal{G}$}
-% $result \leftarrow 0$\;
-% \For{each node $\mathcal{V}_z \in \Gamma(x)\cap\Gamma(y)$}{
-% Array $uncertainEdgeList \leftarrow [ ]$\;
-% $probValue \leftarrow 1$\;
-% 	\For{each node $\mathcal{V}_m$ connecting to node $\mathcal{V}_z$}{
-%     	\If{$\mathcal{V}_m=\mathcal{V}_x$ or $\mathcal{V}_m=\mathcal{V}_y$}{
-%         	$probValue \leftarrow probValue \times \mathcal{P}_{m,z}$\;
-%         	add $\mathcal{P}_{m,z}$ to $uncertainEdgeList$\;
-%         }
-%     }
-%     Array $probListC \leftarrow kEdgeProbability(uncertainEdgeList)$\;
-%     Array $probListA \leftarrow dict[\mathcal{V}_z]$\;
-%     Array $probListB \leftarrow $ use $probListA$ and $probListC$ to calculate $probListB$ based on the Equation (\ref{URA-equation})\;
-%     $oneNodeResult \leftarrow 0$\;
-%     \For{each $i \in [0,len(probListB))$}{
-%     	$oneNodeResult \leftarrow oneNodeResult + probListB[i] \times \frac{1}{i+2}$\;
-%     }
-%     $result \leftarrow result + probValue \times oneNodeResult$\;
-% }
-% return $result$\;
-% \caption{Resource Allocation Value Calculation}
-% \end{algorithm}
+\begin{algorithm}[H]
+  \scriptsize
+\KwData{Nodes $\mathcal{V}_x$, $\mathcal{V}_y$, an uncertain graph $\mathcal{G}$ and the hash table $dict$ after running Algorithm 2}
+\KwResult{Resource Allocation value for nodes $\mathcal{V}_x$ and $\mathcal{V}_y$ in $\mathcal{G}$}
+$result \leftarrow 0$\;
+\For{each node $\mathcal{V}_z \in \Gamma(x)\cap\Gamma(y)$}{
+Array $uncertainEdgeList \leftarrow [ ]$\;
+$probValue \leftarrow 1$\;
+	\For{each node $\mathcal{V}_m$ connecting to node $\mathcal{V}_z$}{
+    	\If{$\mathcal{V}_m=\mathcal{V}_x$ or $\mathcal{V}_m=\mathcal{V}_y$}{
+        	$probValue \leftarrow probValue \times \mathcal{P}_{m,z}$\;
+        	add $\mathcal{P}_{m,z}$ to $uncertainEdgeList$\;
+        }
+    }
+    Array $probListC \leftarrow kEdgeProbability(uncertainEdgeList)$\;
+    Array $probListA \leftarrow dict[\mathcal{V}_z]$\;
+    Array $probListB \leftarrow $ use $probListA$ and $probListC$ to calculate $probListB$ based on the Equation (\ref{URA-equation})\;
+    $oneNodeResult \leftarrow 0$\;
+    \For{each $i \in [0,len(probListB))$}{
+    	$oneNodeResult \leftarrow oneNodeResult + probListB[i] \times \frac{1}{i+2}$\;
+    }
+    $result \leftarrow result + probValue \times oneNodeResult$\;
+}
+return $result$\;
+\caption{Resource Allocation Value Calculation}
+\end{algorithm}
 
-% \end{frame}
+\end{frame}
 
 
 \begin{frame}{Link Prediction - Experiment - Dataset}
@@ -943,13 +943,13 @@ After adding node $\mathcal{V}_2$ or $\mathcal{V}_4$, the $\mathcal{UR}$ will be
 \item $\mathcal{UR}$ only measures the sharpness of the boundary.
 \item The boundary between communities becomes less clear due to the appearance of noise edges.
 \item At the first few steps of the expansion steps, the sharpness of the boundary is not really important.
-\item $\mathcal{UR}$ only cares about the nodes in $\mathcal{D}$ and pays no attention to the difference between shell nodes and unknown area’s nodes.
 \end{itemize}
 \end{frame}
 
 \begin{frame}{Local Community Detection - Ideas}
 
 \begin{itemize}
+\item $\mathcal{UR}$ only cares about the nodes in $\mathcal{D}$ and pays no attention to the difference between shell nodes and unknown area’s nodes.
 \item Though shell nodes are not part of the community, they can be regarded as the neighbors of the community.
 \item Nodes in the same community share some common neighbors, even though they do not have direct links with each other.
 \end{itemize}
